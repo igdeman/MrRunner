@@ -89,4 +89,6 @@ MonoBehaviour:
   C: 0
   R: 0
   fill: {fileID: 8483485131553594953}
+  tileFramePrefab: {fileID: 1172040930357283063, guid: d869b919bf786435f9a1eb8b5928ee55,
+    type: 3}
   type: 0

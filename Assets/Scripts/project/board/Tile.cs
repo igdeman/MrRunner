@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace MrRunner
 {
-    public enum TileType { Empty, Obstacle, Start, End, Path }
+    public enum TileType { Empty, Obstacle, Start, End }
 
     [RequireComponent(typeof(RectTransform))]
     public class Tile : MonoBehaviour
@@ -13,13 +13,21 @@ namespace MrRunner
         public RectTransform rectTransform { get => (RectTransform)transform; }
         public int C;
         public int R;
+        public ColorPalette ColorPalette;
 
         [SerializeField]
         private Image fill;
+        [SerializeField]
+        TileFrame tileFramePrefab;
         private List<GameObject> visits = new List<GameObject>();
         [SerializeField]
         private TileType type = TileType.Empty;
-        private float outlineTicknes = 5;
+        private float outlineTicknes = 9;
+
+        void Awake()
+        {
+            Type = type;
+        }
 
         public TileType Type
         {
@@ -30,19 +38,16 @@ namespace MrRunner
                 switch (type)
                 {
                     case TileType.Empty:
-                        fill.color = new Color(1, 1, 1);
+                        fill.color = ColorPalette.EmptyTileColor;
                         break;
                     case TileType.Obstacle:
-                        fill.color = new Color(0, 0, 1);
+                        fill.color = ColorPalette.ObstacleTileColor;
                         break;
                     case TileType.Start:
-                        fill.color = new Color(1, 0, 0);
+                        fill.color = ColorPalette.StartTileColor;
                         break;
                     case TileType.End:
-                        fill.color = new Color(0, 1, 0);
-                        break;
-                    case TileType.Path:
-                        fill.color = new Color(1, 1, 0);
+                        fill.color = ColorPalette.EndTileColor;
                         break;
                 }
             }
@@ -60,19 +65,15 @@ namespace MrRunner
         {
             if (type == TileType.Empty)
             {
-                GameObject go = new GameObject();
-                go.AddComponent<Image>();
-                go.name = "TileOutline";
-                visits.Add(go);
+                TileFrame tf = Instantiate<GameObject>(tileFramePrefab.gameObject).GetComponent<TileFrame>();
+                tf.Color = c;
+                tf.Ticknes = outlineTicknes;
+                tf.gameObject.name = "TileOutline";
+                visits.Add(tf.gameObject);
 
-                float offset = outlineTicknes * 3f * visits.Count;
-                RectTransform rt = go.GetComponent<RectTransform>();
-                rt.SetParent(transform, false);
-                rt.sizeDelta = new Vector2(rectTransform.sizeDelta.x - offset, rectTransform.sizeDelta.y - offset);
-                rt.SetAsLastSibling();
-                Outline o = go.AddComponent<Outline>();
-                o.effectDistance = new Vector2(outlineTicknes, outlineTicknes);
-                o.effectColor = c;
+                float offset = outlineTicknes * visits.Count * 2;
+                tf.rectTransform.SetParent(transform, false);
+                tf.rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x - offset, rectTransform.sizeDelta.y - offset);
             }
         }
     }

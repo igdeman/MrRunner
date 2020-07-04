@@ -1,8 +1,5 @@
-﻿using System.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace MrRunner
 {
@@ -23,6 +20,11 @@ namespace MrRunner
         public RectTransform rectTransform { get => (RectTransform)transform; }
         public float TileSize { get => tileSize; }
 
+        public Tile[,] Create(Config config, ColorPalette colorPalette)
+        {
+            tilePrefab.ColorPalette = colorPalette;
+            return Create(config);
+        }
         public Tile[,] Create(Config config)
         {
             this.config = config;
@@ -32,10 +34,7 @@ namespace MrRunner
             start.Type = TileType.Start;
             end = tiles[config.EndPosition.x, config.EndPosition.y];
             end.Type = TileType.End;
-
-            float st = Time.realtimeSinceStartup;
             CreateObstacles(tiles);
-            Debug.Log($"CREATE OBSTACLES DURATION: {Time.realtimeSinceStartup - st}");
             return tiles;
         }
 
@@ -48,6 +47,7 @@ namespace MrRunner
                     for (int r = 0; r < config.TotalRows; r++)
                     {
                         tiles[c, r].Clear();
+                        Destroy(tiles[c, r].gameObject);
                     }
                 }
             }
@@ -70,8 +70,10 @@ namespace MrRunner
         Tile CreateTile(int c, int r)
         {
             Tile t = Instantiate<GameObject>(tilePrefab.gameObject).GetComponent<Tile>();
+            t.ColorPalette = tilePrefab.ColorPalette;
             t.C = c;
             t.R = r;
+            t.Type = TileType.Empty;
             t.rectTransform.sizeDelta = new Vector2(tileSize, tileSize);
             t.transform.SetParent(transform, false);
             t.transform.localPosition = GetTilePosition(c, r);

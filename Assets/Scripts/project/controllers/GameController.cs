@@ -21,14 +21,15 @@ namespace MrRunner
         void Start()
         {
             config = Instantiate<Config>(config);
+            Camera.main.backgroundColor = DataStore.ColorPalette.BackgroundColor;
             Create();
             view.GoButton.onClick.AddListener(()=> {
                 Run();
             });
-            AddEventListener();
+            AddEventListeners();
         }
 
-        void AddEventListener()
+        void AddEventListeners()
         {
             EventDispatcher.AddEventListener<AlgorithmEvent, AbstractAlgorithm>(AlgorithmEvent.MARK_VISITED, AlgorithmEventHandler);
             EventDispatcher.AddEventListener<AlgorithmEvent, AbstractAlgorithm>(AlgorithmEvent.MOVE_PLAYER, AlgorithmEventHandler);
@@ -55,10 +56,13 @@ namespace MrRunner
         void Create()
         {
             DataStore.Simulations.Add(new SimulationResult());
-            tiles = view.Board.Create(config);
+            tiles = view.Board.Create(config, DataStore.ColorPalette);
 
             algorithms.Add(new Dijkstras(config));
             algorithms.Add(new Greedy(config));
+
+            if(DataStore.Weather != null)
+                view.WeatherRenderer.RendererData = DataStore.Weather;
 
             view.GoButton.gameObject.SetActive(true);
             stats = DataStore.Simulations[DataStore.Simulations.Count-1];

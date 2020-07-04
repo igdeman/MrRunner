@@ -8,14 +8,9 @@ namespace MrRunner
     public class GameView : MonoBehaviour
     {
         public Board Board;
+        public WeatherRenderer WeatherRenderer;
         public GameOverDialogue GameOverDialogue;
         public GameStatsDialogue GameStatsDialogue;
         public Button GoButton;
-
-        private void Awake()
-        {
-            //GameOverDialogue.gameObject.SetActive(false);
-            //GameStatsDialogue.gameObject.SetActive(false);
-        }
     }
 }
